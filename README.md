@@ -64,12 +64,9 @@ El proyecto fue diseñado bajo un paradigma modular para garantizar escalabilida
 
 * **Gestión de Scripts**: Se definieron `start` y `dev` para mantener una clara separación entre la ejecución en caliente para desarrollo local y la ejecución en frío para un eventual despliegue.
 
+### 🌟 Plus: Entorno Dockerizado (Opcional)
+
+Aunque no era un requisito estricto para esta fase, el desarrollo y pruebas de este servidor base se realizaron utilizando un entorno aislado mediante Docker (`node:18-alpine`). Esta decisión técnica garantiza la consistencia del entorno de trabajo, evitando la problemática de diferencias de OS ("en mi máquina sí funciona") e introduciendo buenas prácticas orientadas a DevOps y contenedores desde la concepción del proyecto.
+
 ### Sobre las capturas de pantalla
 
-Respecto a los pantallazos que enviaste, la respuesta lógica y alineada a las instrucciones es **no incluirlos dentro del `README.md`**.
-
-La consigna del proyecto especifica claramente dos entregables separados:
-1. El repositorio de GitHub, que debe contener el `README.md` con los requisitos, instrucciones y ejemplos de uso en texto plano.
-2. Una carpeta compartida en Google Drive estructurada específicamente para alojar las evidencias visuales ("Capturas de pantalla del servidor en funcionamiento" y "Capturas del uso de rutas... y archivos planos").
-
-A nivel de arquitectura de software, los archivos `README.md` en repositorios backend profesionales se mantienen limpios, técnicos y orientados al código. Las imágenes se reservan solo si documentan diagramas de arquitectura complejos o interfaces de usuario (frontend). Las capturas de consola que tomaste debes subirlas exclusivamente a la subcarpeta de Drive solicitada para la evaluación.
