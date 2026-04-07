@@ -68,5 +68,4 @@ El proyecto fue diseñado bajo un paradigma modular para garantizar escalabilida
 
 Aunque no era un requisito estricto para esta fase, el desarrollo y pruebas de este servidor base se realizaron utilizando un entorno aislado mediante Docker (`node:18-alpine`). Esta decisión técnica garantiza la consistencia del entorno de trabajo, evitando la problemática de diferencias de OS ("en mi máquina sí funciona") e introduciendo buenas prácticas orientadas a DevOps y contenedores desde la concepción del proyecto.
 
-### Sobre las capturas de pantalla
 
