@@ -1,0 +1,25 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "PostgresDocker",
+            "database": "alkewallet",
+            "username": "postgres",
+            "password": "admin"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "bakcendProyectoModulo7",
+            "database": "backend_db",
+            "username": "admin"
+        }
+    ]
+}
