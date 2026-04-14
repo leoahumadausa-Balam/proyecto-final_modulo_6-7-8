@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
+app.use(express.json()); // Permite a Express leer el req.body en formato JSON (Crítico para POST/PUT)
 app.use(logger); // Intercepta peticiones y escribe en log.txt
 app.use(express.static('public')); // Sirve estáticos si la ruta no coincide
 

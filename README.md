@@ -68,4 +68,113 @@ El proyecto fue diseñado bajo un paradigma modular para garantizar escalabilida
 
 Aunque no era un requisito estricto para esta fase, el desarrollo y pruebas de este servidor base se realizaron utilizando un entorno aislado mediante Docker (`node:18-alpine`). Esta decisión técnica garantiza la consistencia del entorno de trabajo, evitando la problemática de diferencias de OS ("en mi máquina sí funciona") e introduciendo buenas prácticas orientadas a DevOps y contenedores desde la concepción del proyecto.
 
+---
 
+## Módulo 7: Integración con Base de Datos (Sequelize + PostgreSQL)
+
+### Objetivo
+Conectar la aplicación a una base de datos relacional PostgreSQL utilizando el ORM Sequelize, definir modelos de datos, establecer relaciones entre entidades e implementar operaciones CRUD completas con búsquedas dinámicas.
+
+### Stack Técnico Agregado
+* **Sequelize**: ORM para Node.js que permite interactuar con PostgreSQL usando JavaScript en lugar de SQL puro.
+* **pg / pg-hstore**: Driver oficial de PostgreSQL para Node.js, requerido por Sequelize.
+* **Docker (PostgreSQL 15-alpine)**: Base de datos PostgreSQL ejecutándose como contenedor aislado. Configurada en `docker-compose.yml`.
+
+### Configuración de la Base de Datos
+Las credenciales de conexión se gestionan mediante variables de entorno en el archivo `.env`:
+```env
+PORT=4000
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=admin
+DB_PASSWORD=secretpassword
+DB_NAME=backend_db
+```
+
+Para levantar la base de datos, ejecutar el contenedor de Docker:
+```bash
+docker compose up -d
+```
+
+### Modelos Definidos
+
+#### Modelo `Usuario` (tabla: `usuarios`)
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | INTEGER | Clave primaria (autoincremental) |
+| nombre | STRING | Nombre del usuario (requerido) |
+| email | STRING | Correo único (requerido) |
+| password | STRING | Contraseña (requerido) |
+| rol | STRING | Rol de acceso (default: 'user') |
+| createdAt | DATE | Timestamp automático |
+| updatedAt | DATE | Timestamp automático |
+
+#### Modelo `Producto` (tabla: `productos`)
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | INTEGER | Clave primaria (autoincremental) |
+| nombre | STRING | Nombre del producto (requerido) |
+| precio | FLOAT | Precio del producto (requerido) |
+| descripcion | TEXT | Descripción opcional |
+| usuarioId | INTEGER | Clave foránea hacia `usuarios` |
+| createdAt | DATE | Timestamp automático |
+| updatedAt | DATE | Timestamp automático |
+
+#### Relación entre Modelos (1:N)
+Se implementó una relación **Un usuario puede tener muchos productos**:
+```
+Usuario --hasMany--> Producto
+Producto --belongsTo--> Usuario
+```
+Sequelize agrega automáticamente la columna `usuarioId` en la tabla `productos` como clave foránea.
+
+### Sincronización Automática de Tablas
+Al iniciar el servidor, Sequelize crea las tablas automáticamente si no existen:
+```javascript
+await sequelize.sync({ force: false });
+```
+
+### Endpoints de la API REST
+
+#### Usuarios — `/usuarios`
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/usuarios` | Crear un nuevo usuario |
+| `GET` | `/usuarios` | Listar todos los usuarios |
+| `PUT` | `/usuarios/:id` | Actualizar un usuario por ID |
+| `DELETE` | `/usuarios/:id` | Eliminar un usuario por ID |
+
+**Ejemplo POST /usuarios:**
+```bash
+curl -X POST http://localhost:4000/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{"nombre": "Leo", "email": "leo@test.com", "password": "mi_password"}'
+```
+
+**Respuesta:**
+```json
+{
+  "status": "success",
+  "message": "Usuario creado exitosamente",
+  "data": { "id": 1, "nombre": "Leo", "email": "leo@test.com", "rol": "user" }
+}
+```
+
+#### Productos — `/productos`
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/productos` | Crear un nuevo producto |
+| `GET` | `/productos` | Listar todos los productos |
+| `GET` | `/productos?nombre=X` | **Búsqueda dinámica** por nombre (filtro parcial) |
+| `PUT` | `/productos/:id` | Actualizar un producto por ID |
+| `DELETE` | `/productos/:id` | Eliminar un producto por ID |
+
+### Formato de Respuesta Estándar
+Todas las respuestas de la API siguen un formato consistente:
+```json
+{
+  "status": "success | error",
+  "message": "Descripción del resultado",
+  "data": { }
+}
+```

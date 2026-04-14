@@ -2,3 +2,5 @@
 [4/7/2026 9:27:13 PM] Acceso a ruta: /favicon.ico
 [4/7/2026 9:28:04 PM] Acceso a ruta: /status
 [4/7/2026 9:30:24 PM] Acceso a ruta: /
+[4/14/2026 6:10:18 PM] Acceso a ruta: /usuarios
+[4/14/2026 6:23:20 PM] Acceso a ruta: /usuarios
