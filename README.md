@@ -178,3 +178,113 @@ Todas las respuestas de la API siguen un formato consistente:
   "data": { }
 }
 ```
+
+---
+
+## Módulo 8: API RESTful Segura (JWT + Subida de Archivos)
+
+### Objetivo
+Proteger los endpoints de la API con autenticación mediante JSON Web Tokens (JWT) e integrar la funcionalidad de subida de archivos con validación de tipo y tamaño.
+
+### Nuevas Dependencias
+```bash
+npm install jsonwebtoken bcryptjs multer
+```
+* **jsonwebtoken**: Generación y verificación de tokens JWT.
+* **bcryptjs**: Encriptación segura de contraseñas (hash con salt).
+* **multer**: Middleware para manejo de `multipart/form-data` (subida de archivos).
+
+### Autenticación JWT
+
+#### ¿Cómo funciona?
+1. El usuario se registra en `POST /auth/register` (contraseña encriptada con bcrypt).
+2. El usuario hace login en `POST /auth/login` y recibe un **token JWT** válido por 24 horas.
+3. Para acceder a rutas protegidas, el token se envía en el header `Authorization`.
+
+#### Endpoints de Autenticación (Rutas Públicas)
+| Método | Ruta | Descripción | Body |
+|--------|------|-------------|------|
+| `POST` | `/auth/register` | Registro de usuario | `{ nombre, email, password }` |
+| `POST` | `/auth/login` | Login — devuelve token JWT | `{ email, password }` |
+
+**Ejemplo de Login:**
+```bash
+curl -X POST http://localhost:4000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@test.com", "password": "123456"}'
+```
+
+**Respuesta:**
+```json
+{
+  "status": "success",
+  "message": "Login exitoso.",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "usuario": { "id": 1, "nombre": "Admin", "email": "admin@test.com", "rol": "user" }
+  }
+}
+```
+
+#### Cómo usar el token en rutas protegidas
+Incluye el token en el header `Authorization` de cada petición:
+```bash
+curl -X DELETE http://localhost:4000/usuarios/1 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Si no se proporciona token o es inválido, la API responde con `401 Unauthorized`:
+```json
+{ "status": "error", "message": "Acceso denegado. No se proporcionó token de autenticación.", "data": null }
+```
+
+### Tabla de Rutas: Públicas vs. Protegidas 🔒
+
+| Método | Ruta | Acceso | Descripción |
+|--------|------|--------|-------------|
+| `POST` | `/auth/register` | 🟢 Pública | Registro de usuario |
+| `POST` | `/auth/login` | 🟢 Pública | Login y obtención de token |
+| `POST` | `/usuarios` | 🟢 Pública | Crear usuario |
+| `GET` | `/usuarios` | 🟢 Pública | Listar usuarios |
+| `PUT` | `/usuarios/:id` | 🔒 JWT | Actualizar usuario |
+| `DELETE` | `/usuarios/:id` | 🔒 JWT | Eliminar usuario |
+| `POST` | `/productos` | 🔒 JWT | Crear producto |
+| `GET` | `/productos` | 🟢 Pública | Listar productos |
+| `PUT` | `/productos/:id` | 🔒 JWT | Actualizar producto |
+| `DELETE` | `/productos/:id` | 🔒 JWT | Eliminar producto |
+| `POST` | `/upload` | 🔒 JWT | Subir imagen de perfil |
+
+### Subida de Archivos
+
+El endpoint `POST /upload` permite subir imágenes de perfil al servidor:
+* **Tipos aceptados**: `jpg`, `jpeg`, `png`
+* **Tamaño máximo**: 2 MB
+* **Almacenamiento**: carpeta `uploads/` en la raíz del proyecto
+* **Plus implementado**: la ruta del archivo se asocia al usuario autenticado en la BD
+
+**Ejemplo de subida:**
+```bash
+curl -X POST http://localhost:4000/upload \
+  -H "Authorization: Bearer TU_TOKEN_AQUI" \
+  -F "imagen=@/ruta/a/tu/imagen.jpg"
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "status": "success",
+  "message": "Archivo subido exitosamente y asociado al usuario.",
+  "data": {
+    "filename": "1776211438379-foto.jpg",
+    "path": "uploads/1776211438379-foto.jpg",
+    "size": "349.25 KB"
+  }
+}
+```
+
+### Justificación Técnica — Decisiones de Seguridad
+
+* **¿Por qué proteger PUT y DELETE?** Son operaciones de mutación de datos. Solo un usuario autenticado (que demostró su identidad con credenciales válidas) debería poder modificar o eliminar registros.
+* **¿Por qué bcrypt para las contraseñas?** Las contraseñas nunca se almacenan en texto plano. bcrypt aplica un algoritmo de hash con "salt" que hace computacionalmente inviable revertirlo, protegiendo a los usuarios incluso si la base de datos fuera comprometida.
+* **¿Dónde se almacena el token?** El token vive en el cliente (navegador/app móvil). El servidor solo genera y verifica tokens — nunca los almacena. Esto hace la arquitectura stateless y escalable.
+* **¿Por qué expiración de 24h?** Limita el tiempo de exposición si un token es interceptado, sin sacrificar la experiencia del usuario.

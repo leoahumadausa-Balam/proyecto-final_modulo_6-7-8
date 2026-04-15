@@ -23,6 +23,10 @@ const User = sequelize.define('User', {
     rol: {
         type: DataTypes.STRING,
         defaultValue: 'user'
+    },
+    foto: {
+        type: DataTypes.STRING,
+        allowNull: true // Ruta de la imagen de perfil (se llena al subir archivo)
     }
 }, {
     tableName: 'usuarios', // Para que la tabla se llame 'usuarios' en la BBDD

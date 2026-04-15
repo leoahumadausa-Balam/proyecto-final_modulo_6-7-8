@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.json()); // Permite a Express leer el req.body en formato JSON (Crítico para POST/PUT)
 app.use(logger); // Intercepta peticiones y escribe en log.txt
-app.use(express.static('public')); // Sirve estáticos si la ruta no coincide
+app.use(express.static('public')); // Sirve archivos estáticos desde /public
+app.use('/uploads', express.static('uploads')); // Sirve las imágenes subidas desde /uploads
 
 // Rutas
 app.use('/', router);
@@ -25,7 +26,7 @@ const server = app.listen(PORT, async () => {
     // Sincronizar los modelos con la Base de Datos
     require('./models/index.js'); // Importamos los modelos y sus relaciones
     try {
-        await sequelize.sync({ force: false }); // force: false asegura no borrar datos si ya existen
+        await sequelize.sync({ force: false }); // force: false protege los datos existentes al reiniciar
         console.log('✅ Tablas sincronizadas automáticamente con PostgreSQL.');
     } catch (error) {
         console.error('❌ Error al sincronizar las tablas con PostgreSQL:', error);

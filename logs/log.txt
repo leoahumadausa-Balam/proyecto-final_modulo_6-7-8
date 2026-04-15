@@ -4,3 +4,11 @@
 [4/7/2026 9:30:24 PM] Acceso a ruta: /
 [4/14/2026 6:10:18 PM] Acceso a ruta: /usuarios
 [4/14/2026 6:23:20 PM] Acceso a ruta: /usuarios
+[4/14/2026 7:48:59 PM] Acceso a ruta: /auth/register
+[4/14/2026 7:51:17 PM] Acceso a ruta: /auth/register
+[4/14/2026 7:52:59 PM] Acceso a ruta: /auth/register
+[4/14/2026 7:53:49 PM] Acceso a ruta: /auth/login
+[4/14/2026 7:57:42 PM] Acceso a ruta: /usuarios/1
+[4/14/2026 7:58:34 PM] Acceso a ruta: /usuarios/1
+[4/14/2026 8:01:33 PM] Acceso a ruta: /auth/login
+[4/14/2026 8:03:58 PM] Acceso a ruta: /upload
